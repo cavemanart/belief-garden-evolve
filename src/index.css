@@ -2,41 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Unthink Design System - Thoughtful, warm, and distraction-free
+All colors MUST be HSL for consistency and theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - warm, calm neutrals */
+    --background: 35 15% 98%;
+    --foreground: 25 15% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card and surface colors */
+    --card: 35 25% 96%;
+    --card-foreground: 25 15% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 35 25% 96%;
+    --popover-foreground: 25 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - sage green for thoughtful actions */
+    --primary: 140 25% 45%;
+    --primary-foreground: 35 15% 98%;
+    --primary-glow: 140 35% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - warm terracotta for highlights */
+    --secondary: 15 45% 85%;
+    --secondary-foreground: 25 15% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted tones for subtle elements */
+    --muted: 35 15% 90%;
+    --muted-foreground: 25 10% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - warm terracotta */
+    --accent: 15 65% 70%;
+    --accent-foreground: 35 15% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive actions */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 35 15% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs - soft and warm */
+    --border: 35 20% 88%;
+    --input: 35 20% 92%;
+    --ring: 140 25% 45%;
 
-    --radius: 0.5rem;
+    /* Success and growth colors */
+    --success: 125 40% 50%;
+    --success-foreground: 35 15% 98%;
+
+    /* Warning for belief changes */
+    --warning: 45 90% 60%;
+    --warning-foreground: 25 15% 15%;
+
+    /* Gradients for beautiful effects */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-warm: linear-gradient(135deg, hsl(var(--accent) / 0.1), hsl(var(--primary) / 0.1));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px hsl(var(--primary) / 0.08);
+    --shadow-medium: 0 4px 16px hsl(var(--primary) / 0.12);
+    --shadow-large: 0 8px 32px hsl(var(--primary) / 0.16);
+
+    /* Animations and transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-gentle: all 0.2s ease-out;
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
