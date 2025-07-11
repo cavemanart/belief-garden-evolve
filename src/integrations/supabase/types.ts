@@ -14,6 +14,133 @@ export type Database = {
   }
   public: {
     Tables: {
+      belief_cards: {
+        Row: {
+          created_at: string
+          current_belief: string
+          date_changed: string | null
+          explanation: string | null
+          id: string
+          previous_belief: string
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_belief: string
+          date_changed?: string | null
+          explanation?: string | null
+          id?: string
+          previous_belief: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_belief?: string
+          date_changed?: string | null
+          explanation?: string | null
+          id?: string
+          previous_belief?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          belief_card_id: string | null
+          content: string
+          created_at: string
+          essay_id: string | null
+          id: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          belief_card_id?: string | null
+          content: string
+          created_at?: string
+          essay_id?: string | null
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          belief_card_id?: string | null
+          content?: string
+          created_at?: string
+          essay_id?: string | null
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_belief_card_id_fkey"
+            columns: ["belief_card_id"]
+            isOneToOne: false
+            referencedRelation: "belief_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_essay_id_fkey"
+            columns: ["essay_id"]
+            isOneToOne: false
+            referencedRelation: "essays"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      essays: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          published: boolean | null
+          tags: string[] | null
+          title: string
+          tldr: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          published?: boolean | null
+          tags?: string[] | null
+          title: string
+          tldr?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          published?: boolean | null
+          tags?: string[] | null
+          title?: string
+          tldr?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

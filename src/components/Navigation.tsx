@@ -42,18 +42,29 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
-              Explore
-            </Button>
+            <Link to="/explore">
+              <Button variant="ghost" size="sm">
+                Explore
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm">
               Topics
             </Button>
             {user ? (
               <>
-                <Button variant="warm" size="sm">
-                  <PenTool className="w-4 h-4 mr-2" />
-                  Write
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Link to="/write">
+                    <Button variant="warm" size="sm">
+                      <PenTool className="w-4 h-4 mr-2" />
+                      Write
+                    </Button>
+                  </Link>
+                  <Link to="/belief-card">
+                    <Button variant="gentle" size="sm">
+                      Add Belief
+                    </Button>
+                  </Link>
+                </div>
                 <Link to="/profile">
                   <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
                     <AvatarImage src={profile?.avatar_url || ''} />
