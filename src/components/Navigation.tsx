@@ -1,16 +1,31 @@
 import { Button } from "@/components/ui/button";
-import { Search, PenTool, User, Menu } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, PenTool, LogOut, Menu } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
   return (
     <nav className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <div className="text-2xl font-bold text-primary font-interface">
+            <Link to="/" className="text-2xl font-bold text-primary font-interface">
               Unthink
-            </div>
+            </Link>
           </div>
 
           {/* Search Bar - Hidden on mobile */}
@@ -33,13 +48,31 @@ const Navigation = () => {
             <Button variant="ghost" size="sm">
               Topics
             </Button>
-            <Button variant="warm" size="sm">
-              <PenTool className="w-4 h-4 mr-2" />
-              Write
-            </Button>
-            <Button variant="ghost" size="icon">
-              <User className="w-4 h-4" />
-            </Button>
+            {user ? (
+              <>
+                <Button variant="warm" size="sm">
+                  <PenTool className="w-4 h-4 mr-2" />
+                  Write
+                </Button>
+                <Link to="/profile">
+                  <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
+                    <AvatarImage src={profile?.avatar_url || ''} />
+                    <AvatarFallback className="text-xs bg-accent text-accent-foreground">
+                      {profile?.display_name ? getInitials(profile.display_name) : 'UN'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={signOut}>
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <Link to="/auth">
+                <Button variant="warm" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
