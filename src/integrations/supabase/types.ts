@@ -109,7 +109,12 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          email_subscribers: boolean | null
+          excerpt: string | null
           id: string
+          image_urls: string[] | null
+          paid_only: boolean | null
+          post_type: string | null
           published: boolean | null
           tags: string[] | null
           title: string
@@ -120,7 +125,12 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          email_subscribers?: boolean | null
+          excerpt?: string | null
           id?: string
+          image_urls?: string[] | null
+          paid_only?: boolean | null
+          post_type?: string | null
           published?: boolean | null
           tags?: string[] | null
           title: string
@@ -131,7 +141,12 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          email_subscribers?: boolean | null
+          excerpt?: string | null
           id?: string
+          image_urls?: string[] | null
+          paid_only?: boolean | null
+          post_type?: string | null
           published?: boolean | null
           tags?: string[] | null
           title?: string
@@ -149,6 +164,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          onboarding_completed_at: string | null
+          profile_completed: boolean | null
           updated_at: string
           user_id: string
         }
@@ -159,6 +176,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          onboarding_completed_at?: string | null
+          profile_completed?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -169,6 +188,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          onboarding_completed_at?: string | null
+          profile_completed?: boolean | null
           updated_at?: string
           user_id?: string
         }

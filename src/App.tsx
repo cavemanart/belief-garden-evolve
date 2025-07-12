@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import WriteEssay from "./pages/WriteEssay";
 import CreateBeliefCard from "./pages/CreateBeliefCard";
 import Explore from "./pages/Explore";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/write" element={<WriteEssay />} />
             <Route path="/belief-card" element={<CreateBeliefCard />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

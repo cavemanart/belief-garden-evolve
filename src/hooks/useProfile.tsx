@@ -10,6 +10,8 @@ export interface Profile {
   bio: string | null;
   belief_areas: string[] | null;
   avatar_url: string | null;
+  profile_completed: boolean | null;
+  onboarding_completed_at: string | null;
   created_at: string;
   updated_at: string;
 }
