@@ -209,6 +209,14 @@ const WriteEssay = () => {
                 <Sparkles className="w-4 h-4 mr-2" />
                 Publish
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/email-composer')}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Send Newsletter
+              </Button>
             </div>
           </div>
 

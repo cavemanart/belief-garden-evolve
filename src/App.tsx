@@ -11,6 +11,9 @@ import WriteEssay from "./pages/WriteEssay";
 import CreateBeliefCard from "./pages/CreateBeliefCard";
 import Explore from "./pages/Explore";
 import Onboarding from "./pages/Onboarding";
+import CreatorProfile from "./pages/CreatorProfile";
+import EmailComposer from "./pages/EmailComposer";
+import PaymentSettings from "./pages/PaymentSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,9 @@ const App = () => (
             <Route path="/belief-card" element={<CreateBeliefCard />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/creator/:userId" element={<CreatorProfile />} />
+            <Route path="/email-composer" element={<EmailComposer />} />
+            <Route path="/payment-settings" element={<PaymentSettings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

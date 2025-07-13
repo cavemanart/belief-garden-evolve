@@ -1,13 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, PenTool, LogOut, Menu } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Search, PenTool, LogOut, Menu, Settings, CreditCard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navigation = () => {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    signOut();
+    navigate('/');
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -65,17 +72,45 @@ const Navigation = () => {
                     </Button>
                   </Link>
                 </div>
-                <Link to="/profile">
-                  <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
-                    <AvatarImage src={profile?.avatar_url || ''} />
-                    <AvatarFallback className="text-xs bg-accent text-accent-foreground">
-                      {profile?.display_name ? getInitials(profile.display_name) : 'UN'}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-                <Button variant="ghost" size="icon" onClick={signOut}>
-                  <LogOut className="w-4 h-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
+                      <AvatarImage src={profile?.avatar_url || ''} />
+                      <AvatarFallback className="text-xs bg-accent text-accent-foreground">
+                        {profile?.display_name ? getInitials(profile.display_name) : 'UN'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Profile Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/write')}>
+                      <PenTool className="w-4 h-4 mr-2" />
+                      Write Post
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/payment-settings')}>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Payment Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/creator/${user.id}`)}>
+                      <Avatar className="w-4 h-4 mr-2">
+                        <AvatarImage src={profile?.avatar_url || ''} />
+                        <AvatarFallback className="text-xs">
+                          {profile?.display_name ? getInitials(profile.display_name) : 'UN'}
+                        </AvatarFallback>
+                      </Avatar>
+                      My Creator Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <Link to="/auth">
