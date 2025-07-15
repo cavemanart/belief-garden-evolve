@@ -365,7 +365,7 @@ const WriteEssay = () => {
                           <FormItem>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value || false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
@@ -386,7 +386,7 @@ const WriteEssay = () => {
                           <FormItem>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value || false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
