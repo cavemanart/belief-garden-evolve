@@ -55,9 +55,11 @@ export type Database = {
           belief_card_id: string | null
           content: string
           created_at: string
+          depth: number | null
           essay_id: string | null
           id: string
           parent_id: string | null
+          thread_id: string | null
           updated_at: string
           user_id: string
         }
@@ -65,9 +67,11 @@ export type Database = {
           belief_card_id?: string | null
           content: string
           created_at?: string
+          depth?: number | null
           essay_id?: string | null
           id?: string
           parent_id?: string | null
+          thread_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -75,9 +79,11 @@ export type Database = {
           belief_card_id?: string | null
           content?: string
           created_at?: string
+          depth?: number | null
           essay_id?: string | null
           id?: string
           parent_id?: string | null
+          thread_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -156,6 +162,54 @@ export type Database = {
         }
         Relationships: []
       }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      hearts: {
+        Row: {
+          belief_card_id: string | null
+          comment_id: string | null
+          created_at: string
+          essay_id: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          belief_card_id?: string | null
+          comment_id?: string | null
+          created_at?: string
+          essay_id?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          belief_card_id?: string | null
+          comment_id?: string | null
+          created_at?: string
+          essay_id?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -190,6 +244,36 @@ export type Database = {
           id?: string
           onboarding_completed_at?: string | null
           profile_completed?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reposts: {
+        Row: {
+          belief_card_id: string | null
+          comment_text: string | null
+          created_at: string
+          essay_id: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          belief_card_id?: string | null
+          comment_text?: string | null
+          created_at?: string
+          essay_id?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          belief_card_id?: string | null
+          comment_text?: string | null
+          created_at?: string
+          essay_id?: string | null
+          id?: string
           updated_at?: string
           user_id?: string
         }

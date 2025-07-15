@@ -49,6 +49,11 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link to="/feed">
+              <Button variant="ghost" size="sm">
+                Feed
+              </Button>
+            </Link>
             <Link to="/explore">
               <Button variant="ghost" size="sm">
                 Explore

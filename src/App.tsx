@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import WriteEssay from "./pages/WriteEssay";
 import CreateBeliefCard from "./pages/CreateBeliefCard";
+import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
 import Onboarding from "./pages/Onboarding";
 import CreatorProfile from "./pages/CreatorProfile";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/write" element={<WriteEssay />} />
             <Route path="/belief-card" element={<CreateBeliefCard />} />
+            <Route path="/feed" element={<Feed />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/creator/:userId" element={<CreatorProfile />} />
