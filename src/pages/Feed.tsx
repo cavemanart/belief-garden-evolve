@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedFilters from "@/components/FeedFilters";
+import QuickPost from "@/components/QuickPost";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
@@ -273,17 +274,19 @@ const Feed = () => {
       
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Discovery Feed</h1>
-          <p className="text-muted-foreground">Thoughtful content from your community</p>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Your Feed</h1>
+          <p className="text-muted-foreground">Share your thoughts and discover content from your community</p>
         </div>
+
+        {/* Quick Post - Only show for authenticated users */}
+        {user && <QuickPost onPostCreated={fetchFeedPosts} />}
 
         {/* Tabs for Following vs Trending */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="following">Fresh From People You Follow</TabsTrigger>
-            <TabsTrigger value="tech">Trending in Tech</TabsTrigger>
-            <TabsTrigger value="culture">Culture & Spirituality</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="following">Following</TabsTrigger>
+            <TabsTrigger value="trending">Discover</TabsTrigger>
           </TabsList>
 
           <TabsContent value="following" className="space-y-6">
@@ -329,57 +332,30 @@ const Feed = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="tech" className="space-y-6">
+          <TabsContent value="trending" className="space-y-6">
             <FeedFilters 
-              availableTags={['Technology', 'AI', 'Startups', 'Programming', 'Web3', 'Innovation']}
+              availableTags={getTrendingTopics()}
               selectedTags={selectedTags}
               onTagSelect={handleTagFilter}
               onClearFilters={clearFilters}
             />
             
             <div className="space-y-6">
-              {posts
-                .filter(post => 
-                  !selectedTags.length || 
-                  post.content.tags?.some((tag: string) => 
-                    ['Technology', 'AI', 'Startups', 'Programming', 'Web3', 'Innovation'].includes(tag) ||
-                    selectedTags.includes(tag)
-                  )
-                )
-                .map(post => (
+              {posts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">
+                    No posts available. Be the first to share something!
+                  </p>
+                </div>
+              ) : (
+                posts.map(post => (
                   <FeedPostCard 
                     key={`${post.type}-${post.id}`} 
                     post={post} 
                     onUpdate={fetchFeedPosts}
                   />
-                ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="culture" className="space-y-6">
-            <FeedFilters 
-              availableTags={['Philosophy', 'Spirituality', 'Psychology', 'Art', 'Literature', 'Culture']}
-              selectedTags={selectedTags}
-              onTagSelect={handleTagFilter}
-              onClearFilters={clearFilters}
-            />
-            
-            <div className="space-y-6">
-              {posts
-                .filter(post => 
-                  !selectedTags.length || 
-                  post.content.tags?.some((tag: string) => 
-                    ['Philosophy', 'Spirituality', 'Psychology', 'Art', 'Literature', 'Culture'].includes(tag) ||
-                    selectedTags.includes(tag)
-                  )
-                )
-                .map(post => (
-                  <FeedPostCard 
-                    key={`${post.type}-${post.id}`} 
-                    post={post} 
-                    onUpdate={fetchFeedPosts}
-                  />
-                ))}
+                ))
+              )}
             </div>
           </TabsContent>
         </Tabs>
