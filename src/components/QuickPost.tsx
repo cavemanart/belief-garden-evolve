@@ -63,7 +63,7 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
           tags,
           published: true,
           user_id: authUser.id, // ✅ matches RLS
-          post_type: "short-form",
+          post_type: postType === "essay" ? "short-insight" : "long-form",
         });
 
         if (error) throw error;
