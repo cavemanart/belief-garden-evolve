@@ -54,29 +54,32 @@ const Explore = () => {
   const fetchContent = async () => {
     setLoading(true);
     try {
-      // Fetch essays (simplified)
+      // Fetch essays with author profiles
       const { data: essaysData, error: essaysError } = await supabase
         .from('essays')
-        .select('id, title, content, tldr, tags, created_at')
+        .select(`
+          id, title, content, tldr, tags, created_at,
+          profiles!fk_essays_profiles(display_name, avatar_url)
+        `)
         .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (essaysError) throw essaysError;
 
-      // Fetch belief cards (simplified)
+      // Fetch belief cards with author profiles
       const { data: beliefsData, error: beliefsError } = await supabase
         .from('belief_cards')
-        .select('id, previous_belief, current_belief, explanation, date_changed, tags, created_at')
+        .select(`
+          id, previous_belief, current_belief, explanation, date_changed, tags, created_at,
+          profiles!fk_belief_cards_profiles(display_name, avatar_url)
+        `)
         .order('created_at', { ascending: false });
 
       if (beliefsError) throw beliefsError;
 
-      // Add null profiles for compatibility
-      const essaysWithProfiles = essaysData?.map(essay => ({ ...essay, profiles: null })) || [];
-      const beliefsWithProfiles = beliefsData?.map(belief => ({ ...belief, profiles: null })) || [];
-
-      setEssays(essaysWithProfiles);
-      setBeliefCards(beliefsWithProfiles);
+      // Data already has profiles attached
+      setEssays(essaysData || []);
+      setBeliefCards(beliefsData || []);
 
       // Extract all unique tags
       const essayTags = essaysData?.flatMap(essay => essay.tags) || [];

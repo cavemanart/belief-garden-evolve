@@ -57,7 +57,7 @@ const Feed = () => {
             .from('essays')
             .select(`
               id, title, excerpt, content, tags, created_at, published, user_id,
-              profiles!inner(id, display_name, avatar_url)
+              profiles!fk_essays_profiles(id, display_name, avatar_url)
             `)
             .in('user_id', followingIds)
             .eq('published', true)
@@ -69,7 +69,7 @@ const Feed = () => {
             .from('belief_cards')
             .select(`
               id, previous_belief, current_belief, explanation, tags, created_at, user_id,
-              profiles!inner(id, display_name, avatar_url)
+              profiles!fk_belief_cards_profiles(id, display_name, avatar_url)
             `)
             .in('user_id', followingIds)
             .order('created_at', { ascending: false })
@@ -116,7 +116,7 @@ const Feed = () => {
           .from('essays')
           .select(`
             id, title, excerpt, content, tags, created_at, published, user_id,
-            profiles!inner(id, display_name, avatar_url)
+            profiles!fk_essays_profiles(id, display_name, avatar_url)
           `)
           .eq('published', true)
           .order('created_at', { ascending: false })
@@ -126,7 +126,7 @@ const Feed = () => {
           .from('belief_cards')
           .select(`
             id, previous_belief, current_belief, explanation, tags, created_at, user_id,
-            profiles!inner(id, display_name, avatar_url)
+            profiles!fk_belief_cards_profiles(id, display_name, avatar_url)
           `)
           .order('created_at', { ascending: false })
           .limit(20);

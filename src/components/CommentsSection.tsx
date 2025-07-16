@@ -58,7 +58,7 @@ const CommentsSection = ({ itemId, itemType, onCommentAdded }: CommentsSectionPr
         .from('comments')
         .select(`
           id, content, user_id, parent_id, depth, thread_id, created_at,
-          profiles!inner(display_name, avatar_url)
+          profiles!fk_comments_profiles(display_name, avatar_url)
         `)
         .eq(itemType === 'essay' ? 'essay_id' : 'belief_card_id', itemId)
         .order('created_at', { ascending: true });
