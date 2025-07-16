@@ -1,32 +1,10 @@
 import { useState } from "react";
-import {
-  Heart,
-  MessageCircle,
-  Repeat,
-  MoreHorizontal,
-  Clock,
-  Tag,
-} from "lucide-react";
+import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,7 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 
 interface FeedPost {
   id: string;
-  type: "essay" | "belief_card" | "repost";
+  type: 'essay' | 'belief_card' | 'repost';
   content: any;
   author: {
     id: string;
@@ -65,45 +43,54 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isReposting, setIsReposting] = useState(false);
-  const [repostComment, setRepostComment] = useState("");
+  const [repostComment, setRepostComment] = useState('');
   const [showComments, setShowComments] = useState(false);
   const [heartLoading, setHeartLoading] = useState(false);
 
-  const getInitials = (name: string) =>
-    name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
 
   const handleHeart = async () => {
     if (!user || heartLoading) return;
 
     setHeartLoading(true);
     try {
-      const heartTable = post.type === "essay" ? "essay_id" : "belief_card_id";
-
+      const heartTable = post.type === 'essay' ? 'essay_id' : 'belief_card_id';
+      
       if (post.is_hearted) {
+        // Remove heart
         await supabase
-          .from("hearts")
+          .from('hearts')
           .delete()
-          .eq("user_id", user.id)
+          .eq('user_id', user.id)
           .eq(heartTable, post.id);
-
-        toast({ description: "Heart removed" });
-      } else {
-        await supabase.from("hearts").insert({
-          user_id: user.id,
-          [heartTable]: post.id,
+        
+        toast({
+          description: "Heart removed",
         });
-
-        toast({ description: "Heart added" });
+      } else {
+        // Add heart
+        await supabase
+          .from('hearts')
+          .insert({
+            user_id: user.id,
+            [heartTable]: post.id
+          });
+        
+        toast({
+          description: "Heart added",
+        });
       }
-
+      
       onUpdate();
     } catch (error) {
-      console.error("Error toggling heart:", error);
+      console.error('Error toggling heart:', error);
       toast({
         title: "Error",
         description: "Could not update heart",
@@ -121,20 +108,22 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
       const repostData = {
         user_id: user.id,
         comment_text: repostComment.trim() || null,
-        ...(post.type === "essay"
-          ? { essay_id: post.id }
-          : { belief_card_id: post.id }),
+        ...(post.type === 'essay' ? { essay_id: post.id } : { belief_card_id: post.id })
       };
 
-      await supabase.from("reposts").insert(repostData);
+      await supabase
+        .from('reposts')
+        .insert(repostData);
 
-      toast({ description: "Post shared with your followers" });
-
+      toast({
+        description: "Post shared with your followers",
+      });
+      
       setIsReposting(false);
-      setRepostComment("");
+      setRepostComment('');
       onUpdate();
     } catch (error) {
-      console.error("Error reposting:", error);
+      console.error('Error reposting:', error);
       toast({
         title: "Error",
         description: "Could not share post",
@@ -143,64 +132,13 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
     }
   };
 
-  const handleSaveToReadingList = async () => {
-    if (!user) return;
-
-    const { error } = await supabase.from("reading_list").insert({
-      user_id: user.id,
-      essay_id: post.id,
-    });
-
-    if (error) {
-      toast({
-        title: "Failed to save",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Saved to your reading list!",
-      });
-    }
-  };
-
-  const handleFollowUser = async () => {
-    if (!user || !post?.author?.id) return;
-
-    const { error } = await supabase.from("follows").insert({
-      follower_id: user.id,
-      following_id: post.author.id,
-    });
-
-    if (error) {
-      toast({
-        title: "Failed to follow",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: `You're now following ${post.author.display_name}`,
-      });
-    }
-  };
-
-  const handleReportPost = async () => {
-    toast({
-      title: "Reported!",
-      description: "Thank you for helping keep this space safe.",
-    });
-
-    // Optional: log report to `reports` table
-  };
-
   const renderContent = () => {
-    if (post.type === "essay") {
+    if (post.type === 'essay') {
       return (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
             {post.content.tags?.slice(0, 3).map((tag: string, index: number) => (
-              <span
+              <span 
                 key={index}
                 className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full"
               >
@@ -209,16 +147,15 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
               </span>
             ))}
           </div>
-
+          
           <h2 className="text-xl font-bold text-foreground font-reading leading-tight">
             {post.content.title}
           </h2>
-
+          
           <p className="text-muted-foreground leading-relaxed line-clamp-3">
-            {post.content.excerpt ||
-              post.content.content?.substring(0, 200) + "..."}
+            {post.content.excerpt || post.content.content?.substring(0, 200) + '...'}
           </p>
-
+          
           <div className="flex items-center text-xs text-muted-foreground">
             <Clock className="w-3 h-3 mr-1" />
             <span>
@@ -240,9 +177,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Before
-                </span>
+                <span className="text-xs uppercase tracking-wide text-muted-foreground">Before</span>
               </div>
               <p className="text-sm text-foreground/80 italic leading-relaxed">
                 "{post.content.previous_belief}"
@@ -256,9 +191,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-success rounded-full"></div>
-                <span className="text-xs uppercase tracking-wide text-success">
-                  Now
-                </span>
+                <span className="text-xs uppercase tracking-wide text-success">Now</span>
               </div>
               <p className="text-sm text-foreground font-medium leading-relaxed">
                 "{post.content.current_belief}"
@@ -280,10 +213,11 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
 
   return (
     <Card className="p-6 hover:shadow-medium transition-all duration-200 bg-card border-border/50">
+      {/* Author header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post.author.avatar_url || ""} />
+            <AvatarImage src={post.author.avatar_url || ''} />
             <AvatarFallback className="text-sm bg-accent text-accent-foreground">
               {getInitials(post.author.display_name)}
             </AvatarFallback>
@@ -303,33 +237,29 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {post.type === "essay" && (
-              <DropdownMenuItem onClick={handleSaveToReadingList}>
-                Save to reading list
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={handleFollowUser}>
-              Follow {post.author.display_name}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleReportPost}>
-              Report content
-            </DropdownMenuItem>
+            <DropdownMenuItem>Save to reading list</DropdownMenuItem>
+            <DropdownMenuItem>Follow {post.author.display_name}</DropdownMenuItem>
+            <DropdownMenuItem>Report content</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <div className="mb-6">{renderContent()}</div>
+      {/* Post content */}
+      <div className="mb-6">
+        {renderContent()}
+      </div>
 
+      {/* Interaction buttons */}
       <div className="flex items-center justify-between pt-4 border-t border-border/30">
         <div className="flex items-center space-x-6">
           <Button
             variant="ghost"
             size="sm"
-            className={`space-x-2 ${post.is_hearted ? "text-red-500" : "text-muted-foreground"}`}
+            className={`space-x-2 ${post.is_hearted ? 'text-red-500' : 'text-muted-foreground'}`}
             onClick={handleHeart}
             disabled={heartLoading}
           >
-            <Heart className={`w-4 h-4 ${post.is_hearted ? "fill-current" : ""}`} />
+            <Heart className={`w-4 h-4 ${post.is_hearted ? 'fill-current' : ''}`} />
             <span>{post.hearts_count}</span>
           </Button>
 
@@ -370,7 +300,9 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
                     <Button variant="outline" onClick={() => setIsReposting(false)}>
                       Cancel
                     </Button>
-                    <Button onClick={handleRepost}>Share</Button>
+                    <Button onClick={handleRepost}>
+                      Share
+                    </Button>
                   </div>
                 </div>
               </DialogContent>
@@ -379,15 +311,16 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          {post.type === "essay" ? "Essay" : "Belief Evolution"}
+          {post.type === 'essay' ? 'Essay' : 'Belief Evolution'}
         </div>
       </div>
 
+      {/* Comments section */}
       {showComments && (
         <div className="mt-6 pt-6 border-t border-border/30">
-          <CommentsSection
+          <CommentsSection 
             itemId={post.id}
-            itemType={post.type === "repost" ? "essay" : post.type}
+            itemType={post.type === 'repost' ? 'essay' : post.type}
             onCommentAdded={onUpdate}
           />
         </div>
