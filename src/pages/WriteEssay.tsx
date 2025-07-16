@@ -358,19 +358,9 @@ const WriteEssay = () => {
                         <Mail className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">Send to Email Subscribers</span>
                       </div>
-                      <FormField
-                        control={form.control}
-                        name="email_subscribers"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Switch
-                                checked={field.value || false}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Switch
+                        checked={form.watch('email_subscribers') || false}
+                        onCheckedChange={(checked) => form.setValue('email_subscribers', checked)}
                       />
                     </div>
                     
@@ -379,19 +369,9 @@ const WriteEssay = () => {
                         <DollarSign className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">Paid Subscribers Only</span>
                       </div>
-                      <FormField
-                        control={form.control}
-                        name="paid_only"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Switch
-                                checked={field.value || false}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Switch
+                        checked={form.watch('paid_only') || false}
+                        onCheckedChange={(checked) => form.setValue('paid_only', checked)}
                       />
                     </div>
                   </CardContent>
@@ -406,21 +386,11 @@ const WriteEssay = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <FormField
-                      control={form.control}
-                      name="tags"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <TagSelector
-                              selectedTags={field.value || []}
-                              onTagsChange={field.onChange}
-                              placeholder="Add tags..."
-                              maxTags={5}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
+                    <TagSelector
+                      selectedTags={form.watch('tags') || []}
+                      onTagsChange={(tags) => form.setValue('tags', tags)}
+                      placeholder="Add tags..."
+                      maxTags={5}
                     />
                   </CardContent>
                 </Card>
