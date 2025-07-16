@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useProfile } from "@/hooks/useProfile";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PenTool, Image, Video, Share2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 import TagSelector from "./TagSelector";
 
 interface QuickPostProps {
@@ -16,9 +15,10 @@ interface QuickPostProps {
 }
 
 const QuickPost = ({ onPostCreated }: QuickPostProps) => {
-  const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+
+  const [authUser, setAuthUser] = useState<any>(null);
   const [postType, setPostType] = useState<"essay" | "belief_card">("essay");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -27,8 +27,22 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ Ensure authUser is in sync with RLS
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setAuthUser(data.user);
+      } else if (error) {
+        console.error("Failed to fetch user:", error.message);
+      }
+    };
+
+    getUser();
+  }, []);
+
   const handleSubmit = async () => {
-    if (!user) return;
+    if (!authUser) return;
 
     setIsSubmitting(true);
     try {
@@ -42,17 +56,15 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
           return;
         }
 
-        const { error } = await supabase
-          .from("essays")
-          .insert({
-            title: title.trim(),
-            content: content.trim(),
-            excerpt: content.substring(0, 200) + (content.length > 200 ? "..." : ""),
-            tags,
-            published: true,
-            user_id: user.id,
-            post_type: "short-form"
-          });
+        const { error } = await supabase.from("essays").insert({
+          title: title.trim(),
+          content: content.trim(),
+          excerpt: content.substring(0, 200) + (content.length > 200 ? "..." : ""),
+          tags,
+          published: true,
+          user_id: authUser.id, // ✅ matches RLS
+          post_type: "short-form",
+        });
 
         if (error) throw error;
       } else {
@@ -65,15 +77,13 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
           return;
         }
 
-        const { error } = await supabase
-          .from("belief_cards")
-          .insert({
-            previous_belief: previousBelief.trim(),
-            current_belief: currentBelief.trim(),
-            explanation: content.trim() || null,
-            tags,
-            user_id: user.id,
-          });
+        const { error } = await supabase.from("belief_cards").insert({
+          previous_belief: previousBelief.trim(),
+          current_belief: currentBelief.trim(),
+          explanation: content.trim() || null,
+          tags,
+          user_id: authUser.id, // ✅ matches RLS
+        });
 
         if (error) throw error;
       }
@@ -89,7 +99,7 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
       setPreviousBelief("");
       setCurrentBelief("");
       setTags([]);
-      
+
       onPostCreated?.();
     } catch (error) {
       console.error("Error creating post:", error);
@@ -103,7 +113,7 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
     }
   };
 
-  if (!user) return null;
+  if (!authUser) return null;
 
   return (
     <Card className="mb-6">
@@ -112,10 +122,10 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
           <Avatar className="w-10 h-10">
             <AvatarImage src={profile?.avatar_url || ""} />
             <AvatarFallback>
-              {profile?.display_name?.charAt(0) || user.email?.charAt(0) || "U"}
+              {profile?.display_name?.charAt(0) || authUser.email?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 space-y-4">
             <Tabs value={postType} onValueChange={(value) => setPostType(value as "essay" | "belief_card")}>
               <TabsList className="grid w-full grid-cols-2">
@@ -187,9 +197,9 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
                   <Video className="w-4 h-4" />
                 </Button>
               </div>
-              
-              <Button 
-                onClick={handleSubmit} 
+
+              <Button
+                onClick={handleSubmit}
                 disabled={isSubmitting}
                 size="sm"
               >
