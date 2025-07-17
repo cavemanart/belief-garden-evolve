@@ -51,7 +51,7 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
             tags,
             published: true,
             user_id: user.id,
-            post_type: "short-form"
+            post_type: "short-insight"
           });
 
         if (error) throw error;

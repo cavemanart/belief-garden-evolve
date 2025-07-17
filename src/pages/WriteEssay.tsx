@@ -91,7 +91,7 @@ const WriteEssay = () => {
       });
 
       if (published) {
-        navigate('/');
+        navigate('/feed');
       } else {
         // Don't reset form for drafts, allow continuing to work
         toast({
