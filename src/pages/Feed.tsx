@@ -57,8 +57,7 @@ const Feed = () => {
           const { data: essays } = await supabase
             .from('essays')
             .select(`
-              id, title, excerpt, content, tags, created_at, published, user_id,
-              profiles!fk_essays_profiles(id, display_name, avatar_url)
+              id, title, excerpt, content, tags, created_at, published, user_id
             `)
             .in('user_id', followingIds)
             .eq('published', true)
@@ -69,12 +68,20 @@ const Feed = () => {
           const { data: beliefCards } = await supabase
             .from('belief_cards')
             .select(`
-              id, previous_belief, current_belief, explanation, tags, created_at, user_id,
-              profiles!fk_belief_cards_profiles(id, display_name, avatar_url)
+              id, previous_belief, current_belief, explanation, tags, created_at, user_id
             `)
             .in('user_id', followingIds)
             .order('created_at', { ascending: false })
             .limit(10);
+
+          // Get author profiles separately
+          const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(beliefCards || []).map(c => c.user_id)])];
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('user_id, display_name, avatar_url')
+            .in('user_id', authorIds);
+
+          const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
           // Convert to feed format
           const essayPosts: FeedPost[] = (essays || []).map(essay => ({
@@ -82,9 +89,9 @@ const Feed = () => {
             type: 'essay' as const,
             content: essay,
             author: {
-              id: (essay.profiles as any)?.id || essay.user_id,
-              display_name: (essay.profiles as any)?.display_name || 'Anonymous',
-              avatar_url: (essay.profiles as any)?.avatar_url
+              id: essay.user_id,
+              display_name: profileMap.get(essay.user_id)?.display_name || 'Anonymous',
+              avatar_url: profileMap.get(essay.user_id)?.avatar_url
             },
             created_at: essay.created_at,
             hearts_count: 0,
@@ -98,9 +105,9 @@ const Feed = () => {
             type: 'belief_card' as const,
             content: card,
             author: {
-              id: (card.profiles as any)?.id || card.user_id,
-              display_name: (card.profiles as any)?.display_name || 'Anonymous',
-              avatar_url: (card.profiles as any)?.avatar_url
+              id: card.user_id,
+              display_name: profileMap.get(card.user_id)?.display_name || 'Anonymous',
+              avatar_url: profileMap.get(card.user_id)?.avatar_url
             },
             created_at: card.created_at,
             hearts_count: 0,
@@ -116,8 +123,7 @@ const Feed = () => {
         const { data: essays } = await supabase
           .from('essays')
           .select(`
-            id, title, excerpt, content, tags, created_at, published, user_id,
-            profiles!fk_essays_profiles(id, display_name, avatar_url)
+            id, title, excerpt, content, tags, created_at, published, user_id
           `)
           .eq('published', true)
           .order('created_at', { ascending: false })
@@ -126,11 +132,19 @@ const Feed = () => {
         const { data: beliefCards } = await supabase
           .from('belief_cards')
           .select(`
-            id, previous_belief, current_belief, explanation, tags, created_at, user_id,
-            profiles!fk_belief_cards_profiles(id, display_name, avatar_url)
+            id, previous_belief, current_belief, explanation, tags, created_at, user_id
           `)
           .order('created_at', { ascending: false })
           .limit(20);
+
+        // Get author profiles separately
+        const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(beliefCards || []).map(c => c.user_id)])];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name, avatar_url')
+          .in('user_id', authorIds);
+
+        const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
         // Convert to feed format
         const essayPosts: FeedPost[] = (essays || []).map(essay => ({
@@ -138,9 +152,9 @@ const Feed = () => {
           type: 'essay' as const,
           content: essay,
           author: {
-            id: (essay.profiles as any)?.id || essay.user_id,
-            display_name: (essay.profiles as any)?.display_name || 'Anonymous',
-            avatar_url: (essay.profiles as any)?.avatar_url
+            id: essay.user_id,
+            display_name: profileMap.get(essay.user_id)?.display_name || 'Anonymous',
+            avatar_url: profileMap.get(essay.user_id)?.avatar_url
           },
           created_at: essay.created_at,
           hearts_count: 0,
@@ -154,9 +168,9 @@ const Feed = () => {
           type: 'belief_card' as const,
           content: card,
           author: {
-            id: (card.profiles as any)?.id || card.user_id,
-            display_name: (card.profiles as any)?.display_name || 'Anonymous',
-            avatar_url: (card.profiles as any)?.avatar_url
+            id: card.user_id,
+            display_name: profileMap.get(card.user_id)?.display_name || 'Anonymous',
+            avatar_url: profileMap.get(card.user_id)?.avatar_url
           },
           created_at: card.created_at,
           hearts_count: 0,

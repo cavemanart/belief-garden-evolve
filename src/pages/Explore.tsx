@@ -54,36 +54,57 @@ const Explore = () => {
   const fetchContent = async () => {
     setLoading(true);
     try {
-      // Fetch essays with author profiles
+      // Fetch essays
       const { data: essaysData, error: essaysError } = await supabase
         .from('essays')
         .select(`
-          id, title, content, tldr, tags, created_at,
-          profiles!fk_essays_profiles(display_name, avatar_url)
+          id, title, content, tldr, tags, created_at, user_id
         `)
         .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (essaysError) throw essaysError;
 
-      // Fetch belief cards with author profiles
+      // Fetch belief cards
       const { data: beliefsData, error: beliefsError } = await supabase
         .from('belief_cards')
         .select(`
-          id, previous_belief, current_belief, explanation, date_changed, tags, created_at,
-          profiles!fk_belief_cards_profiles(display_name, avatar_url)
+          id, previous_belief, current_belief, explanation, date_changed, tags, created_at, user_id
         `)
         .order('created_at', { ascending: false });
 
       if (beliefsError) throw beliefsError;
 
-      // Data already has profiles attached
-      setEssays(essaysData || []);
-      setBeliefCards(beliefsData || []);
+      // Get all user IDs and fetch profiles
+      const userIds = [...new Set([
+        ...(essaysData || []).map(e => e.user_id),
+        ...(beliefsData || []).map(b => b.user_id)
+      ])];
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url')
+        .in('user_id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      // Attach profiles to data
+      const essaysWithProfiles = (essaysData || []).map(essay => ({
+        ...essay,
+        profiles: profileMap.get(essay.user_id) || null
+      }));
+
+      const beliefsWithProfiles = (beliefsData || []).map(belief => ({
+        ...belief,
+        profiles: profileMap.get(belief.user_id) || null
+      }));
+
+      setEssays(essaysWithProfiles);
+      setBeliefCards(beliefsWithProfiles);
 
       // Extract all unique tags
-      const essayTags = essaysData?.flatMap(essay => essay.tags) || [];
-      const beliefTags = beliefsData?.flatMap(belief => belief.tags) || [];
+      const essayTags = essaysWithProfiles?.flatMap(essay => essay.tags) || [];
+      const beliefTags = beliefsWithProfiles?.flatMap(belief => belief.tags) || [];
       const uniqueTags = [...new Set([...essayTags, ...beliefTags])];
       setAllTags(uniqueTags);
 
