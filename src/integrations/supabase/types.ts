@@ -72,6 +72,7 @@ export type Database = {
           created_at: string
           depth: number | null
           essay_id: string | null
+          hot_take_id: string | null
           id: string
           parent_id: string | null
           thread_id: string | null
@@ -84,6 +85,7 @@ export type Database = {
           created_at?: string
           depth?: number | null
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           parent_id?: string | null
           thread_id?: string | null
@@ -96,6 +98,7 @@ export type Database = {
           created_at?: string
           depth?: number | null
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           parent_id?: string | null
           thread_id?: string | null
@@ -226,6 +229,7 @@ export type Database = {
           comment_id: string | null
           created_at: string
           essay_id: string | null
+          hot_take_id: string | null
           id: string
           user_id: string
         }
@@ -234,6 +238,7 @@ export type Database = {
           comment_id?: string | null
           created_at?: string
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           user_id: string
         }
@@ -242,6 +247,7 @@ export type Database = {
           comment_id?: string | null
           created_at?: string
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           user_id?: string
         }
@@ -254,6 +260,33 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      hot_takes: {
+        Row: {
+          created_at: string
+          id: string
+          statement: string
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          statement: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          statement?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -336,6 +369,7 @@ export type Database = {
           comment_text: string | null
           created_at: string
           essay_id: string | null
+          hot_take_id: string | null
           id: string
           updated_at: string
           user_id: string
@@ -345,6 +379,7 @@ export type Database = {
           comment_text?: string | null
           created_at?: string
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           updated_at?: string
           user_id: string
@@ -354,6 +389,7 @@ export type Database = {
           comment_text?: string | null
           created_at?: string
           essay_id?: string | null
+          hot_take_id?: string | null
           id?: string
           updated_at?: string
           user_id?: string

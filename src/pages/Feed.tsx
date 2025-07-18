@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 
 interface FeedPost {
   id: string;
-  type: 'essay' | 'belief_card' | 'repost';
+  type: 'essay' | 'hot_take' | 'repost';
   content: any;
   author: {
     id: string;
@@ -64,18 +64,18 @@ const Feed = () => {
             .order('created_at', { ascending: false })
             .limit(10);
 
-          // Get belief cards from followed users
-          const { data: beliefCards } = await supabase
-            .from('belief_cards')
+          // Get hot takes from followed users
+          const { data: hotTakes } = await supabase
+            .from('hot_takes')
             .select(`
-              id, previous_belief, current_belief, explanation, tags, created_at, user_id
+              id, statement, tags, created_at, user_id
             `)
             .in('user_id', followingIds)
             .order('created_at', { ascending: false })
             .limit(10);
 
           // Get author profiles separately
-          const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(beliefCards || []).map(c => c.user_id)])];
+          const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(hotTakes || []).map(c => c.user_id)])];
           const { data: profiles } = await supabase
             .from('profiles')
             .select('user_id, display_name, avatar_url')
@@ -100,23 +100,23 @@ const Feed = () => {
             is_hearted: false
           }));
 
-          const beliefPosts: FeedPost[] = (beliefCards || []).map(card => ({
-            id: card.id,
-            type: 'belief_card' as const,
-            content: card,
+          const hotTakePosts: FeedPost[] = (hotTakes || []).map(hotTake => ({
+            id: hotTake.id,
+            type: 'hot_take' as const,
+            content: hotTake,
             author: {
-              id: card.user_id,
-              display_name: profileMap.get(card.user_id)?.display_name || 'Anonymous',
-              avatar_url: profileMap.get(card.user_id)?.avatar_url
+              id: hotTake.user_id,
+              display_name: profileMap.get(hotTake.user_id)?.display_name || 'Anonymous',
+              avatar_url: profileMap.get(hotTake.user_id)?.avatar_url
             },
-            created_at: card.created_at,
+            created_at: hotTake.created_at,
             hearts_count: 0,
             comments_count: 0,
             reposts_count: 0,
             is_hearted: false
           }));
 
-          feedPosts = [...essayPosts, ...beliefPosts];
+          feedPosts = [...essayPosts, ...hotTakePosts];
         }
       } else {
         // Get trending/all posts based on topic filters
@@ -129,16 +129,16 @@ const Feed = () => {
           .order('created_at', { ascending: false })
           .limit(20);
 
-        const { data: beliefCards } = await supabase
-          .from('belief_cards')
+        const { data: hotTakes } = await supabase
+          .from('hot_takes')
           .select(`
-            id, previous_belief, current_belief, explanation, tags, created_at, user_id
+            id, statement, tags, created_at, user_id
           `)
           .order('created_at', { ascending: false })
           .limit(20);
 
         // Get author profiles separately
-        const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(beliefCards || []).map(c => c.user_id)])];
+        const authorIds = [...new Set([...(essays || []).map(e => e.user_id), ...(hotTakes || []).map(c => c.user_id)])];
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')
@@ -163,23 +163,23 @@ const Feed = () => {
           is_hearted: false
         }));
 
-        const beliefPosts: FeedPost[] = (beliefCards || []).map(card => ({
-          id: card.id,
-          type: 'belief_card' as const,
-          content: card,
+        const hotTakePosts: FeedPost[] = (hotTakes || []).map(hotTake => ({
+          id: hotTake.id,
+          type: 'hot_take' as const,
+          content: hotTake,
           author: {
-            id: card.user_id,
-            display_name: profileMap.get(card.user_id)?.display_name || 'Anonymous',
-            avatar_url: profileMap.get(card.user_id)?.avatar_url
+            id: hotTake.user_id,
+            display_name: profileMap.get(hotTake.user_id)?.display_name || 'Anonymous',
+            avatar_url: profileMap.get(hotTake.user_id)?.avatar_url
           },
-          created_at: card.created_at,
+          created_at: hotTake.created_at,
           hearts_count: 0,
           comments_count: 0,
           reposts_count: 0,
           is_hearted: false
         }));
 
-        feedPosts = [...essayPosts, ...beliefPosts];
+        feedPosts = [...essayPosts, ...hotTakePosts];
       }
 
       // Filter by selected tags
@@ -194,25 +194,27 @@ const Feed = () => {
 
       // Get engagement counts and user interactions
       await Promise.all(feedPosts.map(async (post) => {
-        const heartTable = post.type === 'essay' ? 'essay_id' : 'belief_card_id';
+        const heartColumn = post.type === 'essay' ? 'essay_id' : 'hot_take_id';
+        const commentColumn = post.type === 'essay' ? 'essay_id' : 'hot_take_id';
+        const repostColumn = post.type === 'essay' ? 'essay_id' : 'hot_take_id';
         
         // Get hearts count
         const { count: heartsCount } = await supabase
           .from('hearts')
           .select('*', { count: 'exact', head: true })
-          .eq(heartTable, post.id);
+          .eq(heartColumn, post.id);
 
         // Get comments count
         const { count: commentsCount } = await supabase
           .from('comments')
           .select('*', { count: 'exact', head: true })
-          .eq(post.type === 'essay' ? 'essay_id' : 'belief_card_id', post.id);
+          .eq(commentColumn, post.id);
 
         // Get reposts count
         const { count: repostsCount } = await supabase
           .from('reposts')
           .select('*', { count: 'exact', head: true })
-          .eq(heartTable, post.id);
+          .eq(repostColumn, post.id);
 
         // Check if user has hearted
         let isHearted = false;
@@ -221,7 +223,7 @@ const Feed = () => {
             .from('hearts')
             .select('id')
             .eq('user_id', user.id)
-            .eq(heartTable, post.id)
+            .eq(heartColumn, post.id)
             .single();
           
           isHearted = !!userHeart;

@@ -19,11 +19,10 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
-  const [postType, setPostType] = useState<"essay" | "belief_card">("essay");
+  const [postType, setPostType] = useState<"essay" | "hot_take">("essay");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-  const [previousBelief, setPreviousBelief] = useState("");
-  const [currentBelief, setCurrentBelief] = useState("");
+  const [hotTakeStatement, setHotTakeStatement] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,26 +50,24 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
             tags,
             published: true,
             user_id: user.id,
-            post_type: "short-insight"
+            post_type: "spark"
           });
 
         if (error) throw error;
       } else {
-        if (!previousBelief.trim() || !currentBelief.trim()) {
+        if (!hotTakeStatement.trim()) {
           toast({
-            title: "Missing beliefs",
-            description: "Please add both your previous and current belief",
+            title: "Missing statement",
+            description: "Please add your hot take statement",
             variant: "destructive",
           });
           return;
         }
 
         const { error } = await supabase
-          .from("belief_cards")
+          .from("hot_takes")
           .insert({
-            previous_belief: previousBelief.trim(),
-            current_belief: currentBelief.trim(),
-            explanation: content.trim() || null,
+            statement: hotTakeStatement.trim(),
             tags,
             user_id: user.id,
           });
@@ -86,8 +83,7 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
       // Reset form
       setContent("");
       setTitle("");
-      setPreviousBelief("");
-      setCurrentBelief("");
+      setHotTakeStatement("");
       setTags([]);
       
       onPostCreated?.();
@@ -117,15 +113,15 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
           </Avatar>
           
           <div className="flex-1 space-y-4">
-            <Tabs value={postType} onValueChange={(value) => setPostType(value as "essay" | "belief_card")}>
+            <Tabs value={postType} onValueChange={(value) => setPostType(value as "essay" | "hot_take")}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="essay" className="flex items-center gap-2">
                   <PenTool className="w-4 h-4" />
-                  Quick Post
+                  Spark
                 </TabsTrigger>
-                <TabsTrigger value="belief_card" className="flex items-center gap-2">
+                <TabsTrigger value="hot_take" className="flex items-center gap-2">
                   <Share2 className="w-4 h-4" />
-                  Belief Change
+                  Hot Take
                 </TabsTrigger>
               </TabsList>
 
@@ -146,27 +142,13 @@ const QuickPost = ({ onPostCreated }: QuickPostProps) => {
                 />
               </TabsContent>
 
-              <TabsContent value="belief_card" className="space-y-4">
+              <TabsContent value="hot_take" className="space-y-4">
                 <Textarea
-                  placeholder="What did you used to believe?"
-                  value={previousBelief}
-                  onChange={(e) => setPreviousBelief(e.target.value)}
-                  className="min-h-[60px] resize-none"
+                  placeholder="Share your bold, provocative take that will spark debate..."
+                  value={hotTakeStatement}
+                  onChange={(e) => setHotTakeStatement(e.target.value)}
+                  className="min-h-[120px] resize-none"
                   maxLength={500}
-                />
-                <Textarea
-                  placeholder="What do you believe now?"
-                  value={currentBelief}
-                  onChange={(e) => setCurrentBelief(e.target.value)}
-                  className="min-h-[60px] resize-none"
-                  maxLength={500}
-                />
-                <Textarea
-                  placeholder="What changed your mind? (optional)"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="min-h-[80px] resize-none"
-                  maxLength={1000}
                 />
               </TabsContent>
             </Tabs>

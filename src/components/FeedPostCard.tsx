@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag } from "lucide-react";
+import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,7 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 
 interface FeedPost {
   id: string;
-  type: 'essay' | 'belief_card' | 'repost';
+  type: 'essay' | 'hot_take' | 'repost';
   content: any;
   author: {
     id: string;
@@ -61,7 +61,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
 
     setHeartLoading(true);
     try {
-      const heartTable = post.type === 'essay' ? 'essay_id' : 'belief_card_id';
+      const heartTable = post.type === 'essay' ? 'essay_id' : 'hot_take_id';
       
       if (post.is_hearted) {
         // Remove heart
@@ -108,7 +108,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
       const repostData = {
         user_id: user.id,
         comment_text: repostComment.trim() || null,
-        ...(post.type === 'essay' ? { essay_id: post.id } : { belief_card_id: post.id })
+        ...(post.type === 'essay' ? { essay_id: post.id } : { hot_take_id: post.id })
       };
 
       await supabase
@@ -164,51 +164,40 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
           </div>
         </div>
       );
-    } else {
-      return (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-              Belief Evolution
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">Before</span>
+      } else {
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-primary" />
+                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+                  Hot Take
+                </span>
               </div>
-              <p className="text-sm text-foreground/80 italic leading-relaxed">
-                "{post.content.previous_belief}"
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-lg font-medium text-foreground leading-relaxed">
+                {post.content.statement}
               </p>
-            </div>
 
-            <div className="flex justify-center">
-              <div className="w-4 h-0.5 bg-gradient-to-r from-muted-foreground to-success"></div>
+              {post.content.tags && post.content.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {post.content.tags.slice(0, 5).map((tag: string, index: number) => (
+                    <span 
+                      key={index}
+                      className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full"
+                    >
+                      <Tag className="w-3 h-3 mr-1" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-success rounded-full"></div>
-                <span className="text-xs uppercase tracking-wide text-success">Now</span>
-              </div>
-              <p className="text-sm text-foreground font-medium leading-relaxed">
-                "{post.content.current_belief}"
-              </p>
-            </div>
-
-            {post.content.explanation && (
-              <div className="pt-2 border-t border-border/50">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {post.content.explanation}
-                </p>
-              </div>
-            )}
           </div>
-        </div>
-      );
-    }
+        );
+      }
   };
 
   return (
@@ -311,7 +300,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          {post.type === 'essay' ? 'Essay' : 'Belief Evolution'}
+          {post.type === 'essay' ? 'Essay' : 'Hot Take'}
         </div>
       </div>
 

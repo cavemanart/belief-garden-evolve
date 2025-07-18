@@ -29,7 +29,7 @@ interface Comment {
 
 interface CommentsSectionProps {
   itemId: string;
-  itemType: 'essay' | 'belief_card';
+  itemType: 'essay' | 'hot_take';
   onCommentAdded?: () => void;
 }
 
@@ -60,7 +60,7 @@ const CommentsSection = ({ itemId, itemType, onCommentAdded }: CommentsSectionPr
           id, content, user_id, parent_id, depth, thread_id, created_at,
           profiles!fk_comments_profiles(display_name, avatar_url)
         `)
-        .eq(itemType === 'essay' ? 'essay_id' : 'belief_card_id', itemId)
+        .eq(itemType === 'essay' ? 'essay_id' : 'hot_take_id', itemId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -148,7 +148,7 @@ const CommentsSection = ({ itemId, itemType, onCommentAdded }: CommentsSectionPr
       const commentData = {
         content: newComment.trim(),
         user_id: user.id,
-        [itemType === 'essay' ? 'essay_id' : 'belief_card_id']: itemId,
+        [itemType === 'essay' ? 'essay_id' : 'hot_take_id']: itemId,
         depth: 0,
       };
 
@@ -186,7 +186,7 @@ const CommentsSection = ({ itemId, itemType, onCommentAdded }: CommentsSectionPr
         content: replyContent.trim(),
         user_id: user.id,
         parent_id: parentId,
-        [itemType === 'essay' ? 'essay_id' : 'belief_card_id']: itemId,
+        [itemType === 'essay' ? 'essay_id' : 'hot_take_id']: itemId,
         depth: Math.min(parentDepth + 1, 3), // Max depth of 3
       };
 

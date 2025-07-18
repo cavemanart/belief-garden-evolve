@@ -24,7 +24,7 @@ const essaySchema = z.object({
   tldr: z.string().max(300, 'TL;DR must be less than 300 characters').optional(),
   excerpt: z.string().max(500, 'Excerpt must be less than 500 characters').optional(),
   tags: z.array(z.string()).optional(),
-  post_type: z.enum(['long-form', 'short-insight']),
+  post_type: z.enum(['ignite', 'spark']),
   email_subscribers: z.boolean().optional(),
   paid_only: z.boolean().optional(),
 });
@@ -52,7 +52,7 @@ const WriteEssay = () => {
       tldr: '',
       excerpt: '',
       tags: [],
-      post_type: 'long-form',
+      post_type: 'ignite',
       email_subscribers: false,
       paid_only: false,
     },
@@ -111,7 +111,7 @@ const WriteEssay = () => {
   };
 
   const getPreviewContent = () => {
-    if (postType === 'short-insight') {
+    if (postType === 'spark') {
       return (
         <div className="prose prose-lg max-w-none">
           <h1 className="text-3xl font-bold mb-4">{formData.title || 'Untitled'}</h1>
@@ -232,21 +232,21 @@ const WriteEssay = () => {
                         <div className="flex gap-4 p-1 bg-muted rounded-lg">
                           <Button
                             type="button"
-                            variant={postType === 'long-form' ? 'default' : 'ghost'}
-                            onClick={() => form.setValue('post_type', 'long-form')}
+                            variant={postType === 'ignite' ? 'default' : 'ghost'}
+                            onClick={() => form.setValue('post_type', 'ignite')}
                             className="flex-1 gap-2"
                           >
                             <FileText className="w-4 h-4" />
-                            Long-form Article
+                            Ignite (Deep Dive)
                           </Button>
                           <Button
                             type="button"
-                            variant={postType === 'short-insight' ? 'default' : 'ghost'}
-                            onClick={() => form.setValue('post_type', 'short-insight')}
+                            variant={postType === 'spark' ? 'default' : 'ghost'}
+                            onClick={() => form.setValue('post_type', 'spark')}
                             className="flex-1 gap-2"
                           >
                             <MessageSquare className="w-4 h-4" />
-                            Short Insight
+                            Spark (Quick Insight)
                           </Button>
                         </div>
 
@@ -257,19 +257,19 @@ const WriteEssay = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input 
-                                  placeholder={postType === 'long-form' ? "What's your article about?" : "Share your insight..."} 
-                                  className="text-2xl font-bold border-0 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/50"
-                                  {...field} 
-                                />
+                                 <Input 
+                                   placeholder={postType === 'ignite' ? "What's your deep dive about?" : "Share your spark..."} 
+                                   className="text-2xl font-bold border-0 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/50"
+                                   {...field} 
+                                 />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
 
-                        {/* TL;DR for long-form */}
-                        {postType === 'long-form' && (
+                        {/* TL;DR for ignite posts */}
+                        {postType === 'ignite' && (
                           <FormField
                             control={form.control}
                             name="tldr"
@@ -291,8 +291,8 @@ const WriteEssay = () => {
                           />
                         )}
 
-                        {/* Excerpt for short insights */}
-                        {postType === 'short-insight' && (
+                        {/* Excerpt for sparks */}
+                        {postType === 'spark' && (
                           <FormField
                             control={form.control}
                             name="excerpt"
@@ -323,17 +323,17 @@ const WriteEssay = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Textarea 
-                                  placeholder={
-                                    postType === 'long-form' 
-                                      ? "Tell your story. Share your thoughts, experiences, and reflections..." 
-                                      : "Share your insight in 1-2 paragraphs..."
-                                  }
-                                  className={`border-0 px-0 focus-visible:ring-0 resize-none leading-relaxed text-lg ${
-                                    postType === 'long-form' ? 'min-h-96' : 'min-h-32'
-                                  }`}
-                                  {...field} 
-                                />
+                                 <Textarea 
+                                   placeholder={
+                                     postType === 'ignite' 
+                                       ? "Tell your story. Share your thoughts, experiences, and reflections in depth..." 
+                                       : "Share your quick insight or thought in 1-2 paragraphs..."
+                                   }
+                                   className={`border-0 px-0 focus-visible:ring-0 resize-none leading-relaxed text-lg ${
+                                     postType === 'ignite' ? 'min-h-96' : 'min-h-32'
+                                   }`}
+                                   {...field} 
+                                 />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
