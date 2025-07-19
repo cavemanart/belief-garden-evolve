@@ -59,9 +59,11 @@ const Navigation = () => {
                 Explore
               </Button>
             </Link>
-            <Button variant="ghost" size="sm">
-              Topics
-            </Button>
+            <Link to="/explore">
+              <Button variant="ghost" size="sm">
+                Topics
+              </Button>
+            </Link>
             {user ? (
               <>
                 <div className="flex items-center space-x-2">

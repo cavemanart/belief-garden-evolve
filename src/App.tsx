@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import WriteEssay from "./pages/WriteEssay";
 import CreateHotTake from "./pages/CreateHotTake";
 import Feed from "./pages/Feed";
+import Article from "./pages/Article";
 import Explore from "./pages/Explore";
 import Onboarding from "./pages/Onboarding";
 import CreatorProfile from "./pages/CreatorProfile";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/creator/:userId" element={<CreatorProfile />} />
             <Route path="/email-composer" element={<EmailComposer />} />
             <Route path="/payment-settings" element={<PaymentSettings />} />
+            <Route path="/article/:id" element={<Article />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

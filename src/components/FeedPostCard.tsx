@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame } from "lucide-react";
+import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame, Edit, Bookmark } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,6 +43,7 @@ interface FeedPostCardProps {
 const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isReposting, setIsReposting] = useState(false);
   const [repostComment, setRepostComment] = useState('');
   const [showComments, setShowComments] = useState(false);
@@ -127,6 +129,54 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
       toast({
         title: "Error",
         description: "Could not share post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveToReadingList = async () => {
+    if (!user || post.type !== 'essay') return;
+
+    try {
+      await supabase
+        .from('reading_list')
+        .insert({
+          user_id: user.id,
+          essay_id: post.id
+        });
+
+      toast({
+        description: "Added to reading list",
+      });
+    } catch (error) {
+      console.error('Error adding to reading list:', error);
+      toast({
+        title: "Error",
+        description: "Could not add to reading list",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!user || user.id === post.author.id) return;
+
+    try {
+      await supabase
+        .from('follows')
+        .insert({
+          follower_id: user.id,
+          following_id: post.author.id
+        });
+
+      toast({
+        description: `Now following ${post.author.display_name}`,
+      });
+    } catch (error) {
+      console.error('Error following user:', error);
+      toast({
+        title: "Error",
+        description: "Could not follow user",
         variant: "destructive",
       });
     }
@@ -226,15 +276,33 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Save to reading list</DropdownMenuItem>
-            <DropdownMenuItem>Follow {post.author.display_name}</DropdownMenuItem>
-            <DropdownMenuItem>Report content</DropdownMenuItem>
+            {user && user.id === post.author.id ? (
+              <DropdownMenuItem onClick={() => navigate(`/write?edit=${post.id}`)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit {post.type === 'essay' ? 'Article' : 'Hot Take'}
+              </DropdownMenuItem>
+            ) : (
+              <>
+                {post.type === 'essay' && (
+                  <DropdownMenuItem onClick={handleSaveToReadingList}>
+                    <Bookmark className="w-4 h-4 mr-2" />
+                    Save to reading list
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={handleFollow}>
+                  Follow {post.author.display_name}
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Report content
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       {/* Post content */}
-      <div className="mb-6">
+      <div className="mb-6 cursor-pointer" onClick={() => navigate(`/article/${post.id}`)}>
         {renderContent()}
       </div>
 
