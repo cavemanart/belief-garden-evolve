@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedFilters from "@/components/FeedFilters";
 import FeedHero from "@/components/FeedHero";
-import QuickPost from "@/components/QuickPost";
+import FloatingCreateButton from "@/components/FloatingCreateButton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
@@ -290,26 +290,20 @@ const Feed = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Substack-style centered layout */}
+      <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <FeedHero />
 
         {/* Header */}
-        <div className="mb-6 mt-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Your Feed</h1>
-          <p className="text-muted-foreground">Discover thoughtful content and engage with your community</p>
+        <div className="mb-8 mt-8 text-center">
+          <h1 className="text-4xl font-bold text-foreground mb-3">Latest Posts</h1>
+          <p className="text-muted-foreground text-lg">Discover thoughtful content and provocative takes</p>
         </div>
 
-        {/* Quick Post - Enhanced for dark mode */}
-        {user && (
-          <div className="mb-8">
-            <QuickPost onPostCreated={fetchFeedPosts} />
-          </div>
-        )}
-
-        {/* Tabs for Following vs Trending */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+        {/* Tabs for Following vs Trending - Centered */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-secondary border border-border">
             <TabsTrigger value="following" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
               Following
             </TabsTrigger>
@@ -341,7 +335,7 @@ const Feed = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     {posts.map(post => (
                       <FeedPostCard 
                         key={`${post.type}-${post.id}`} 
@@ -375,7 +369,7 @@ const Feed = () => {
               onClearFilters={clearFilters}
             />
             
-            <div className="space-y-6">
+            <div className="space-y-8">
               {posts.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
@@ -398,6 +392,9 @@ const Feed = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Floating Create Button */}
+      {user && <FloatingCreateButton onContentCreated={fetchFeedPosts} />}
     </div>
   );
 };
