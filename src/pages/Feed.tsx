@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedFilters from "@/components/FeedFilters";
+import FeedHero from "@/components/FeedHero";
 import QuickPost from "@/components/QuickPost";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -278,7 +280,7 @@ const Feed = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <div className="flex items-center justify-center h-96">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       </div>
     );
@@ -289,20 +291,31 @@ const Feed = () => {
       <Navigation />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <FeedHero />
+
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 mt-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Your Feed</h1>
-          <p className="text-muted-foreground">Share your thoughts and discover content from your community</p>
+          <p className="text-muted-foreground">Discover thoughtful content and engage with your community</p>
         </div>
 
-        {/* Quick Post - Only show for authenticated users */}
-        {user && <QuickPost onPostCreated={fetchFeedPosts} />}
+        {/* Quick Post - Enhanced for dark mode */}
+        {user && (
+          <div className="mb-8">
+            <QuickPost onPostCreated={fetchFeedPosts} />
+          </div>
+        )}
 
         {/* Tabs for Following vs Trending */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="following">Following</TabsTrigger>
-            <TabsTrigger value="trending">Discover</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+            <TabsTrigger value="following" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              Following
+            </TabsTrigger>
+            <TabsTrigger value="trending" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              Discover
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="following" className="space-y-6">
@@ -317,10 +330,13 @@ const Feed = () => {
                 
                 {posts.length === 0 ? (
                   <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
+                      <Loader2 className="w-8 h-8 text-accent" />
+                    </div>
                     <p className="text-muted-foreground mb-4">
                       Follow some interesting people to see their posts here
                     </p>
-                    <Button variant="gentle" onClick={() => setActiveTab('tech')}>
+                    <Button variant="outline" onClick={() => setActiveTab('trending')} className="border-accent/30 hover:border-accent/60 hover:bg-accent/10">
                       Explore Trending Content
                     </Button>
                   </div>
@@ -338,10 +354,13 @@ const Feed = () => {
               </>
             ) : (
               <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
+                  <Loader2 className="w-8 h-8 text-accent" />
+                </div>
                 <p className="text-muted-foreground mb-4">
                   Sign in to see posts from people you follow
                 </p>
-                <Button variant="warm" onClick={() => window.location.href = '/auth'}>
+                <Button onClick={() => window.location.href = '/auth'} className="bg-accent hover:bg-accent/90 text-accent-foreground">
                   Sign In
                 </Button>
               </div>
@@ -359,6 +378,9 @@ const Feed = () => {
             <div className="space-y-6">
               {posts.length === 0 ? (
                 <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
+                    <Loader2 className="w-8 h-8 text-accent" />
+                  </div>
                   <p className="text-muted-foreground">
                     No posts available. Be the first to share something!
                   </p>

@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame, Edit, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame, Edit, Bookmark, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -185,84 +186,97 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
   const renderContent = () => {
     if (post.type === 'essay') {
       return (
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {post.content.tags?.slice(0, 3).map((tag: string, index: number) => (
-              <span 
-                key={index}
-                className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full"
-              >
-                <Tag className="w-3 h-3 mr-1" />
-                {tag}
+        <div className="flex gap-6 group cursor-pointer" onClick={() => navigate(`/article/${post.id}`)}>
+          {/* Content */}
+          <div className="flex-1 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {post.content.tags?.slice(0, 3).map((tag: string, index: number) => (
+                <span 
+                  key={index}
+                  className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full border border-accent/30"
+                >
+                  <Tag className="w-3 h-3 mr-1" />
+                  {tag}
+                </span>
+              ))}
+            </div>
+            
+            <h2 className="text-xl font-bold text-foreground font-reading leading-tight group-hover:text-accent transition-colors">
+              {post.content.title}
+            </h2>
+            
+            <p className="text-muted-foreground leading-relaxed line-clamp-2">
+              {post.content.excerpt || post.content.content?.substring(0, 200) + '...'}
+            </p>
+            
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Clock className="w-3 h-3 mr-1" />
+              <span>
+                {Math.ceil((post.content.content?.length || 0) / 200)} min read
               </span>
-            ))}
+            </div>
           </div>
-          
-          <h2 className="text-xl font-bold text-foreground font-reading leading-tight">
-            {post.content.title}
-          </h2>
-          
-          <p className="text-muted-foreground leading-relaxed line-clamp-3">
-            {post.content.excerpt || post.content.content?.substring(0, 200) + '...'}
-          </p>
-          
-          <div className="flex items-center text-xs text-muted-foreground">
-            <Clock className="w-3 h-3 mr-1" />
-            <span>
-              {Math.ceil((post.content.content?.length || 0) / 200)} min read
-            </span>
+
+          {/* Thumbnail */}
+          <div className="w-32 h-24 bg-muted/20 rounded-lg border border-accent/20 flex-shrink-0 flex items-center justify-center group-hover:border-accent/40 transition-colors">
+            <div className="text-muted-foreground text-center">
+              <Tag className="w-6 h-6 mx-auto mb-1 text-accent/60" />
+              <p className="text-xs">Essay</p>
+            </div>
           </div>
         </div>
       );
-      } else {
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-primary" />
-                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-                  Hot Take
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-lg font-medium text-foreground leading-relaxed">
-                {post.content.statement}
-              </p>
-
-              {post.content.tags && post.content.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {post.content.tags.slice(0, 5).map((tag: string, index: number) => (
-                    <span 
-                      key={index}
-                      className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full"
-                    >
-                      <Tag className="w-3 h-3 mr-1" />
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+    } else {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Flame className="w-4 h-4 text-accent" />
+              <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded-full border border-accent/30">
+                Hot Take
+              </span>
             </div>
           </div>
-        );
-      }
+
+          <div className="space-y-3 cursor-pointer" onClick={() => navigate(`/article/${post.id}`)}>
+            <p className="text-lg font-medium text-foreground leading-relaxed hover:text-accent transition-colors">
+              {post.content.statement}
+            </p>
+
+            {post.content.tags && post.content.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.content.tags.slice(0, 5).map((tag: string, index: number) => (
+                  <span 
+                    key={index}
+                    className="inline-flex items-center text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full border border-accent/30"
+                  >
+                    <Tag className="w-3 h-3 mr-1" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
   };
 
   return (
-    <Card className="p-6 hover:shadow-medium transition-all duration-200 bg-card border-border/50">
+    <Card className="p-6 hover:shadow-large transition-all duration-300 bg-card border-accent/20 hover:border-accent/40 red-accent-border">
       {/* Author header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <Avatar className="w-10 h-10">
+          <Avatar className="w-10 h-10 border-2 border-accent/30 hover:border-accent/60 transition-colors">
             <AvatarImage src={post.author.avatar_url || ''} />
-            <AvatarFallback className="text-sm bg-accent text-accent-foreground">
+            <AvatarFallback className="text-sm bg-accent/20 text-accent-foreground border border-accent/30">
               {getInitials(post.author.display_name)}
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-foreground">{post.author.display_name}</p>
+            <p className="font-medium text-foreground hover:text-accent transition-colors cursor-pointer">
+              {post.author.display_name}
+            </p>
             <p className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
             </p>
@@ -271,28 +285,29 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent/10">
               <MoreHorizontal className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-card border-border">
             {user && user.id === post.author.id ? (
-              <DropdownMenuItem onClick={() => navigate(`/write?edit=${post.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/write?edit=${post.id}`)} className="hover:bg-accent/10">
                 <Edit className="w-4 h-4 mr-2" />
                 Edit {post.type === 'essay' ? 'Article' : 'Hot Take'}
               </DropdownMenuItem>
             ) : (
               <>
                 {post.type === 'essay' && (
-                  <DropdownMenuItem onClick={handleSaveToReadingList}>
+                  <DropdownMenuItem onClick={handleSaveToReadingList} className="hover:bg-accent/10">
                     <Bookmark className="w-4 h-4 mr-2" />
                     Save to reading list
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={handleFollow}>
+                <DropdownMenuItem onClick={handleFollow} className="hover:bg-accent/10">
+                  <User className="w-4 h-4 mr-2" />
                   Follow {post.author.display_name}
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-destructive/10 text-destructive">
                   Report content
                 </DropdownMenuItem>
               </>
@@ -302,7 +317,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
       </div>
 
       {/* Post content */}
-      <div className="mb-6 cursor-pointer" onClick={() => navigate(`/article/${post.id}`)}>
+      <div className="mb-6">
         {renderContent()}
       </div>
 
@@ -312,7 +327,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
           <Button
             variant="ghost"
             size="sm"
-            className={`space-x-2 ${post.is_hearted ? 'text-red-500' : 'text-muted-foreground'}`}
+            className={`space-x-2 hover:bg-accent/10 ${post.is_hearted ? 'text-accent' : 'text-muted-foreground hover:text-accent'}`}
             onClick={handleHeart}
             disabled={heartLoading}
           >
@@ -323,7 +338,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
           <Button
             variant="ghost"
             size="sm"
-            className="space-x-2 text-muted-foreground"
+            className="space-x-2 text-muted-foreground hover:text-foreground hover:bg-accent/10"
             onClick={() => setShowComments(!showComments)}
           >
             <MessageCircle className="w-4 h-4" />
@@ -336,28 +351,28 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="space-x-2 text-muted-foreground"
+                  className="space-x-2 text-muted-foreground hover:text-foreground hover:bg-accent/10"
                 >
                   <Repeat className="w-4 h-4" />
                   <span>{post.reposts_count}</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md bg-card border-border">
                 <DialogHeader>
-                  <DialogTitle>Share this post</DialogTitle>
+                  <DialogTitle className="text-foreground">Share this post</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <Textarea
                     placeholder="Add your thoughts (optional)..."
                     value={repostComment}
                     onChange={(e) => setRepostComment(e.target.value)}
-                    className="min-h-[100px]"
+                    className="min-h-[100px] bg-secondary border-border focus:border-accent"
                   />
                   <div className="flex justify-end space-x-2">
-                    <Button variant="outline" onClick={() => setIsReposting(false)}>
+                    <Button variant="outline" onClick={() => setIsReposting(false)} className="border-border hover:bg-accent/10">
                       Cancel
                     </Button>
-                    <Button onClick={handleRepost}>
+                    <Button onClick={handleRepost} className="bg-accent hover:bg-accent/90">
                       Share
                     </Button>
                   </div>
