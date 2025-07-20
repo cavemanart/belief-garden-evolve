@@ -57,7 +57,7 @@ const Article = () => {
         .from('essays')
         .select(`
           *,
-          profiles!inner (
+          profiles!essays_user_id_fkey (
             id,
             display_name,
             avatar_url
