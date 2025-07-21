@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Zap, Loader2, Type, Video, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TagSelector from "./TagSelector";
+import MediaUpload from "./MediaUpload";
 
 interface CreateHotTakeModalProps {
   open: boolean;
@@ -27,6 +28,10 @@ const CreateHotTakeModal = ({ open, onOpenChange, onContentCreated, subtype }: C
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Media upload states
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedVideos, setUploadedVideos] = useState<string[]>([]);
+  
   // Additional fields for different content types
   const [videoUrl, setVideoUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -36,6 +41,8 @@ const CreateHotTakeModal = ({ open, onOpenChange, onContentCreated, subtype }: C
     setContent("");
     setTags([]);
     setIsSubmitting(false);
+    setUploadedImages([]);
+    setUploadedVideos([]);
     setVideoUrl("");
     setImageUrl("");
     setCaption("");
@@ -44,6 +51,14 @@ const CreateHotTakeModal = ({ open, onOpenChange, onContentCreated, subtype }: C
   const handleClose = () => {
     resetForm();
     onOpenChange(false);
+  };
+
+  const handleMediaUpload = (url: string, type: string) => {
+    if (type.startsWith('image/')) {
+      setUploadedImages(prev => [...prev, url]);
+    } else if (type.startsWith('video/')) {
+      setUploadedVideos(prev => [...prev, url]);
+    }
   };
 
   const handleSubmit = async () => {
@@ -125,10 +140,12 @@ const CreateHotTakeModal = ({ open, onOpenChange, onContentCreated, subtype }: C
       case "short_video":
         return (
           <>
-            <Input
-              placeholder="Short video URL (TikTok, Instagram Reel, YouTube Short)..."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="video/*"
+              maxSize={50 * 1024 * 1024} // 50MB for short videos
+              bucket="videos"
+              label="Short Video"
             />
             <Textarea
               placeholder="Your quick video reaction or hot take... Keep it snappy! ⚡"
@@ -143,15 +160,17 @@ const CreateHotTakeModal = ({ open, onOpenChange, onContentCreated, subtype }: C
       case "image":
         return (
           <>
-            <Input
-              placeholder="Image URL..."
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="image/*"
+              maxSize={10 * 1024 * 1024} // 10MB
+              bucket="images"
+              label="Image"
             />
             <Textarea
               placeholder="Drop your hottest take with this image... Make it viral! 🔥"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="min-h-[80px]"
               maxLength={300}
             />

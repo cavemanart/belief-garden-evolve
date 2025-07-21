@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame, Edit, Bookmark, User } from "lucide-react";
+import { Heart, MessageCircle, Repeat, MoreHorizontal, Clock, Tag, Flame, Edit, Bookmark, User, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -183,6 +182,53 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
     }
   };
 
+  const renderMediaContent = (imageUrls: string[]) => {
+    if (!imageUrls || imageUrls.length === 0) return null;
+
+    return (
+      <div className="mt-4 space-y-2">
+        {imageUrls.map((url, index) => {
+          const isVideo = url.includes('/videos/') || url.match(/\.(mp4|webm|mov)$/i);
+          const isAudio = url.includes('/audio/') || url.match(/\.(mp3|wav|ogg)$/i);
+          
+          if (isVideo) {
+            return (
+              <div key={index} className="relative">
+                <video
+                  controls
+                  className="w-full max-h-80 rounded-lg"
+                  poster={url + '?thumbnail=true'}
+                >
+                  <source src={url} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            );
+          } else if (isAudio) {
+            return (
+              <div key={index} className="bg-muted p-4 rounded-lg">
+                <audio controls className="w-full">
+                  <source src={url} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            );
+          } else {
+            return (
+              <img
+                key={index}
+                src={url}
+                alt={`Post media ${index + 1}`}
+                className="w-full max-h-80 object-cover rounded-lg cursor-pointer"
+                onClick={() => window.open(url, '_blank')}
+              />
+            );
+          }
+        })}
+      </div>
+    );
+  };
+
   const renderContent = () => {
     if (post.type === 'essay') {
       return (
@@ -215,6 +261,9 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
                 {Math.ceil((post.content.content?.length || 0) / 200)} min read
               </span>
             </div>
+
+            {/* Display media content */}
+            {renderMediaContent(post.content.image_urls)}
           </div>
 
           {/* Thumbnail */}
@@ -256,6 +305,9 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
                 ))}
               </div>
             )}
+
+            {/* Display media content for hot takes if they have media */}
+            {post.content.image_urls && renderMediaContent(post.content.image_urls)}
           </div>
         </div>
       );

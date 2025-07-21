@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Tag, Heart, MessageCircle, User, ArrowLeft } from 'lucide-react';
@@ -23,6 +24,7 @@ interface Article {
   hearts_count: number;
   comments_count: number;
   is_hearted: boolean;
+  image_urls?: string[];
   profiles: {
     id: string;
     display_name: string;
@@ -53,36 +55,38 @@ const Article = () => {
     if (!id) return;
 
     try {
-      const { data, error } = await supabase
+      // First, get the essay data
+      const { data: essayData, error: essayError } = await supabase
         .from('essays')
-        .select(`
-          *,
-          profiles!inner (
-            id,
-            display_name,
-            avatar_url
-          )
-        `)
-        .eq('essays.id', id)
-        .eq('essays.published', true)
-        .eq('profiles.user_id', 'essays.user_id')
+        .select('*')
+        .eq('id', id)
+        .eq('published', true)
         .single();
 
-      if (error) throw error;
+      if (essayError) throw essayError;
+
+      // Then get the profile data
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .eq('user_id', essayData.user_id)
+        .single();
+
+      if (profileError) throw profileError;
 
       // Get heart and comment counts separately
       const [heartsResult, commentsResult, userHeartResult] = await Promise.all([
-        supabase.from('hearts').select('id', { count: 'exact' }).eq('essay_id', data.id),
-        supabase.from('comments').select('id', { count: 'exact' }).eq('essay_id', data.id),
-        user ? supabase.from('hearts').select('id').eq('essay_id', data.id).eq('user_id', user.id).maybeSingle() : Promise.resolve({ data: null })
+        supabase.from('hearts').select('id', { count: 'exact' }).eq('essay_id', essayData.id),
+        supabase.from('comments').select('id', { count: 'exact' }).eq('essay_id', essayData.id),
+        user ? supabase.from('hearts').select('id').eq('essay_id', essayData.id).eq('user_id', user.id).maybeSingle() : Promise.resolve({ data: null })
       ]);
 
       setArticle({
-        ...data,
+        ...essayData,
         hearts_count: heartsResult.count || 0,
         comments_count: commentsResult.count || 0,
         is_hearted: !!userHeartResult.data,
-        profiles: data.profiles[0]
+        profiles: profileData
       });
     } catch (error) {
       console.error('Error fetching article:', error);
@@ -217,6 +221,20 @@ const Article = () => {
             {article.excerpt && (
               <div className="text-lg text-muted-foreground mb-6 italic">
                 {article.excerpt}
+              </div>
+            )}
+
+            {/* Display uploaded images */}
+            {article.image_urls && article.image_urls.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {article.image_urls.map((imageUrl, index) => (
+                  <img
+                    key={index}
+                    src={imageUrl}
+                    alt={`Article image ${index + 1}`}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                ))}
               </div>
             )}
 

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { PenTool, Loader2, Type, MessageSquare, Mic, Video, Image, BookOpen, Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TagSelector from "./TagSelector";
+import MediaUpload from "./MediaUpload";
 
 interface CreateSparkModalProps {
   open: boolean;
@@ -28,6 +29,11 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Media upload states
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedVideos, setUploadedVideos] = useState<string[]>([]);
+  const [uploadedAudio, setUploadedAudio] = useState<string[]>([]);
+  
   // Additional fields for different content types
   const [threadParts, setThreadParts] = useState<string[]>([""]);
   const [episodeTitle, setEpisodeTitle] = useState("");
@@ -43,6 +49,9 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
     setContent("");
     setTags([]);
     setIsSubmitting(false);
+    setUploadedImages([]);
+    setUploadedVideos([]);
+    setUploadedAudio([]);
     setThreadParts([""]);
     setEpisodeTitle("");
     setAudioDescription("");
@@ -56,6 +65,16 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
   const handleClose = () => {
     resetForm();
     onOpenChange(false);
+  };
+
+  const handleMediaUpload = (url: string, type: string) => {
+    if (type.startsWith('image/')) {
+      setUploadedImages(prev => [...prev, url]);
+    } else if (type.startsWith('video/')) {
+      setUploadedVideos(prev => [...prev, url]);
+    } else if (type.startsWith('audio/')) {
+      setUploadedAudio(prev => [...prev, url]);
+    }
   };
 
   const handleSubmit = async () => {
@@ -72,6 +91,21 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
 
     setIsSubmitting(true);
     try {
+      // Prepare media URLs based on subtype
+      let finalImageUrls: string[] = [];
+      
+      if (subtype === "image") {
+        finalImageUrls = uploadedImages;
+      } else if (subtype === "video" && uploadedVideos.length > 0) {
+        // For video posts, we might want to store video URLs in image_urls or create a separate field
+        finalImageUrls = uploadedVideos;
+      } else if (subtype === "audio" && uploadedAudio.length > 0) {
+        finalImageUrls = uploadedAudio;
+      } else {
+        // For other types, include any uploaded images
+        finalImageUrls = uploadedImages;
+      }
+
       const { error } = await supabase
         .from("essays")
         .insert({
@@ -81,7 +115,8 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
           tags,
           published: true,
           user_id: user.id,
-          post_type: subtype
+          post_type: subtype,
+          image_urls: finalImageUrls.length > 0 ? finalImageUrls : null
         });
 
       if (error) throw error;
@@ -181,6 +216,13 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
               className="min-h-[150px]"
               maxLength={2000}
             />
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="image/*"
+              maxSize={10 * 1024 * 1024} // 10MB
+              bucket="images"
+              label="Image"
+            />
           </>
         );
 
@@ -266,15 +308,12 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
             />
-            <Input
-              placeholder="Video URL or embed link..."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-            />
-            <Input
-              placeholder="Thumbnail image URL (optional)..."
-              value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="video/*"
+              maxSize={100 * 1024 * 1024} // 100MB
+              bucket="videos"
+              label="Video"
             />
             <Textarea
               placeholder="Describe your video content, add chapters, timestamps, or key moments..."
@@ -295,10 +334,12 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
             />
-            <Input
-              placeholder="Image URL..."
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="image/*"
+              maxSize={10 * 1024 * 1024} // 10MB
+              bucket="images"
+              label="Image"
             />
             <Textarea
               placeholder="Share the story behind your image, visual metaphor, or thoughtful reflection..."
@@ -383,6 +424,13 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[120px]"
               maxLength={2000}
+            />
+            <MediaUpload
+              onUpload={handleMediaUpload}
+              accept="image/*"
+              maxSize={10 * 1024 * 1024} // 10MB
+              bucket="images"
+              label="Image"
             />
           </>
         );
