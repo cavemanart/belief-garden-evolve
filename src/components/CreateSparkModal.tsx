@@ -80,7 +80,35 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
   const handleSubmit = async () => {
     if (!user) return;
 
-    if (!title.trim() || !content.trim()) {
+    // Validate based on subtype
+    let actualContent = content;
+    let hasValidContent = false;
+
+    switch (subtype) {
+      case "thread":
+        hasValidContent = Boolean(title.trim() && threadParts.some(part => part.trim()));
+        actualContent = threadParts.filter(part => part.trim()).join('\n\n');
+        break;
+      case "audio":
+        hasValidContent = Boolean(episodeTitle.trim() && audioDescription.trim());
+        actualContent = audioDescription;
+        break;
+      case "image":
+        hasValidContent = Boolean(title.trim() && caption.trim());
+        actualContent = caption;
+        break;
+      case "notes":
+        hasValidContent = Boolean(title.trim() && noteItems.some(item => item.content.trim()));
+        actualContent = noteItems.filter(item => item.content.trim()).map(item => 
+          item.heading ? `${item.heading}\n${item.content}` : item.content
+        ).join('\n\n');
+        break;
+      default:
+        hasValidContent = Boolean(title.trim() && content.trim());
+        break;
+    }
+
+    if (!hasValidContent) {
       toast({
         title: "Missing content",
         description: "Please add both a title and content for your Spark",
@@ -106,12 +134,15 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
         finalImageUrls = uploadedImages;
       }
 
+      // Use the correct title based on subtype
+      const finalTitle = subtype === "audio" ? episodeTitle.trim() : title.trim();
+
       const { error } = await supabase
         .from("essays")
         .insert({
-          title: title.trim(),
-          content: content.trim(),
-          excerpt: content.substring(0, 200) + (content.length > 200 ? "..." : ""),
+          title: finalTitle,
+          content: actualContent.trim(),
+          excerpt: actualContent.substring(0, 200) + (actualContent.length > 200 ? "..." : ""),
           tags,
           published: true,
           user_id: user.id,

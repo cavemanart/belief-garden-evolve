@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Search, PenTool, LogOut, Menu, Settings, CreditCard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -131,9 +132,76 @@ const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="icon" className="hover:text-accent">
-              <Menu className="w-5 h-5" />
-            </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="hover:text-accent">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+                <div className="flex flex-col gap-4 mt-8">
+                  <Link to="/feed" className="text-lg font-medium hover:text-accent transition-colors">
+                    Feed
+                  </Link>
+                  <Link to="/explore" className="text-lg font-medium hover:text-accent transition-colors">
+                    Explore
+                  </Link>
+                  <Link to="/explore" className="text-lg font-medium hover:text-accent transition-colors">
+                    Topics
+                  </Link>
+                  {user ? (
+                    <>
+                      <div className="border-t pt-4 space-y-3">
+                        <Link to="/write">
+                          <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <PenTool className="w-4 h-4 mr-2" />
+                            Write
+                          </Button>
+                        </Link>
+                        <Link to="/hot-take">
+                          <Button variant="outline" className="w-full border-accent/30 hover:border-accent/60 hover:bg-accent/10">
+                            Hot Take
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className="border-t pt-4 space-y-3">
+                        <Link to="/profile" className="flex items-center text-lg font-medium hover:text-accent transition-colors">
+                          <Settings className="w-4 h-4 mr-2" />
+                          Profile Settings
+                        </Link>
+                        <Link to="/payment-settings" className="flex items-center text-lg font-medium hover:text-accent transition-colors">
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Payment Settings
+                        </Link>
+                        <Link to={`/creator/${user.id}`} className="flex items-center text-lg font-medium hover:text-accent transition-colors">
+                          <Avatar className="w-4 h-4 mr-2">
+                            <AvatarImage src={profile?.avatar_url || ''} />
+                            <AvatarFallback className="text-xs">
+                              {profile?.display_name ? getInitials(profile.display_name) : 'UN'}
+                            </AvatarFallback>
+                          </Avatar>
+                          My Creator Profile
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          onClick={handleLogout}
+                          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <Link to="/auth">
+                      <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                        Sign In
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
