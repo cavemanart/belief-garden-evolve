@@ -57,14 +57,15 @@ const Article = () => {
         .from('essays')
         .select(`
           *,
-          profiles!essays_user_id_fkey (
+          profiles!inner (
             id,
             display_name,
             avatar_url
           )
         `)
-        .eq('id', id)
-        .eq('published', true)
+        .eq('essays.id', id)
+        .eq('essays.published', true)
+        .eq('profiles.user_id', 'essays.user_id')
         .single();
 
       if (error) throw error;
