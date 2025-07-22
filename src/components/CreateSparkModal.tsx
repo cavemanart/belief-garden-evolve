@@ -122,6 +122,11 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
       // Prepare media URLs based on subtype
       let finalImageUrls: string[] = [];
       
+      console.log("Debug - uploadedImages:", uploadedImages);
+      console.log("Debug - uploadedVideos:", uploadedVideos);
+      console.log("Debug - uploadedAudio:", uploadedAudio);
+      console.log("Debug - subtype:", subtype);
+      
       if (subtype === "image") {
         finalImageUrls = uploadedImages;
       } else if (subtype === "video" && uploadedVideos.length > 0) {
@@ -133,6 +138,8 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
         // For other types, include any uploaded images
         finalImageUrls = uploadedImages;
       }
+
+      console.log("Debug - finalImageUrls:", finalImageUrls);
 
       // Use the correct title based on subtype
       const finalTitle = subtype === "audio" ? episodeTitle.trim() : title.trim();
