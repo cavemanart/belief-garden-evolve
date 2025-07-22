@@ -269,8 +269,17 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
           {/* Thumbnail */}
           <div className="w-32 h-24 bg-muted/20 rounded-lg border border-accent/20 flex-shrink-0 flex items-center justify-center group-hover:border-accent/40 transition-colors">
             <div className="text-muted-foreground text-center">
-              <Tag className="w-6 h-6 mx-auto mb-1 text-accent/60" />
-              <p className="text-xs">Essay</p>
+              {post.content.post_type === 'spark' ? (
+                <>
+                  <Flame className="w-6 h-6 mx-auto mb-1 text-accent/60" />
+                  <p className="text-xs">Spark</p>
+                </>
+              ) : (
+                <>
+                  <Tag className="w-6 h-6 mx-auto mb-1 text-accent/60" />
+                  <p className="text-xs">Essay</p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -435,7 +444,10 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          {post.type === 'essay' ? 'Essay' : 'Hot Take'}
+          {post.type === 'essay' 
+            ? (post.content.post_type === 'spark' ? 'Spark' : 'Essay')
+            : 'Hot Take'
+          }
         </div>
       </div>
 

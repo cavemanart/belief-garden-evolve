@@ -59,7 +59,7 @@ const Feed = () => {
           const { data: essays } = await supabase
             .from('essays')
             .select(`
-              id, title, excerpt, content, tags, created_at, published, user_id
+              id, title, excerpt, content, tags, created_at, published, user_id, image_urls, post_type
             `)
             .in('user_id', followingIds)
             .eq('published', true)
@@ -125,7 +125,7 @@ const Feed = () => {
         const { data: essays } = await supabase
           .from('essays')
           .select(`
-            id, title, excerpt, content, tags, created_at, published, user_id
+            id, title, excerpt, content, tags, created_at, published, user_id, image_urls, post_type
           `)
           .eq('published', true)
           .order('created_at', { ascending: false })
