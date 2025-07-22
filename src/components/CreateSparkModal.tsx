@@ -146,7 +146,7 @@ const CreateSparkModal = ({ open, onOpenChange, onContentCreated, subtype }: Cre
           tags,
           published: true,
           user_id: user.id,
-          post_type: subtype,
+          post_type: "spark",
           image_urls: finalImageUrls.length > 0 ? finalImageUrls : null
         });
 
