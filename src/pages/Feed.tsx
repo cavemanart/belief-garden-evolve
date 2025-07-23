@@ -335,7 +335,7 @@ const Feed = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-8">
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
                     {posts.map(post => (
                       <FeedPostCard 
                         key={`${post.type}-${post.id}`} 
@@ -369,26 +369,26 @@ const Feed = () => {
               onClearFilters={clearFilters}
             />
             
-            <div className="space-y-8">
-              {posts.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
-                    <Loader2 className="w-8 h-8 text-accent" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    No posts available. Be the first to share something!
-                  </p>
+            {posts.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
+                  <Loader2 className="w-8 h-8 text-accent" />
                 </div>
-              ) : (
-                posts.map(post => (
+                <p className="text-muted-foreground">
+                  No posts available. Be the first to share something!
+                </p>
+              </div>
+            ) : (
+              <div className="bg-card rounded-lg border border-border overflow-hidden">
+                {posts.map(post => (
                   <FeedPostCard 
                     key={`${post.type}-${post.id}`} 
                     post={post} 
                     onUpdate={fetchFeedPosts}
                   />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

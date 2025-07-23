@@ -324,13 +324,13 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
   };
 
   return (
-    <Card className="p-6 hover:shadow-large transition-all duration-300 bg-card border-accent/20 hover:border-accent/40 red-accent-border">
+    <article className="p-4 hover:bg-muted/30 transition-all duration-200 border-b border-border/30 last:border-b-0">
       {/* Author header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <Avatar className="w-10 h-10 border-2 border-accent/30 hover:border-accent/60 transition-colors">
+          <Avatar className="w-10 h-10">
             <AvatarImage src={post.author.avatar_url || ''} />
-            <AvatarFallback className="text-sm bg-accent/20 text-accent-foreground border border-accent/30">
+            <AvatarFallback className="text-sm bg-muted text-muted-foreground">
               {getInitials(post.author.display_name)}
             </AvatarFallback>
           </Avatar>
@@ -378,32 +378,32 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
       </div>
 
       {/* Post content */}
-      <div className="mb-6">
+      <div className="mb-4">
         {renderContent()}
       </div>
 
       {/* Interaction buttons */}
-      <div className="flex items-center justify-between pt-4 border-t border-border/30">
+      <div className="flex items-center justify-between pt-3">
         <div className="flex items-center space-x-6">
           <Button
             variant="ghost"
             size="sm"
-            className={`space-x-2 hover:bg-accent/10 ${post.is_hearted ? 'text-accent' : 'text-muted-foreground hover:text-accent'}`}
+            className={`space-x-1 hover:bg-red-500/10 rounded-full px-3 ${post.is_hearted ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
             onClick={handleHeart}
             disabled={heartLoading}
           >
             <Heart className={`w-4 h-4 ${post.is_hearted ? 'fill-current' : ''}`} />
-            <span>{post.hearts_count}</span>
+            <span className="text-sm">{post.hearts_count}</span>
           </Button>
 
           <Button
             variant="ghost"
             size="sm"
-            className="space-x-2 text-muted-foreground hover:text-foreground hover:bg-accent/10"
+            className="space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full px-3"
             onClick={() => setShowComments(!showComments)}
           >
             <MessageCircle className="w-4 h-4" />
-            <span>{post.comments_count}</span>
+            <span className="text-sm">{post.comments_count}</span>
           </Button>
 
           {user && (
@@ -412,10 +412,10 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="space-x-2 text-muted-foreground hover:text-foreground hover:bg-accent/10"
+                  className="space-x-1 text-muted-foreground hover:text-green-500 hover:bg-green-500/10 rounded-full px-3"
                 >
                   <Repeat className="w-4 h-4" />
-                  <span>{post.reposts_count}</span>
+                  <span className="text-sm">{post.reposts_count}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md bg-card border-border">
@@ -453,7 +453,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
 
       {/* Comments section */}
       {showComments && (
-        <div className="mt-6 pt-6 border-t border-border/30">
+        <div className="mt-4 pt-4 border-t border-border/30">
           <CommentsSection 
             itemId={post.id}
             itemType={post.type === 'repost' ? 'essay' : post.type}
@@ -461,7 +461,7 @@ const FeedPostCard = ({ post, onUpdate }: FeedPostCardProps) => {
           />
         </div>
       )}
-    </Card>
+    </article>
   );
 };
 
