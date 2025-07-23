@@ -17,13 +17,15 @@ interface TagSelectorProps {
   onTagsChange: (tags: string[]) => void;
   placeholder?: string;
   maxTags?: number;
+  className?: string;
 }
 
 const TagSelector = ({ 
   selectedTags, 
   onTagsChange, 
   placeholder = "Add topics you write about",
-  maxTags = 10 
+  maxTags = 10,
+  className = ""
 }: TagSelectorProps) => {
   const [customTag, setCustomTag] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -56,7 +58,7 @@ const TagSelector = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className={`space-y-3 ${className}`}>
       {/* Selected tags */}
       {selectedTags.length > 0 && (
         <div className="flex flex-wrap gap-2">

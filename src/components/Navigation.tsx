@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, PenTool, LogOut, Menu, Settings, CreditCard } from "lucide-react";
+import { Search, PenTool, LogOut, Menu, Settings, CreditCard, Mic2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { Link, useNavigate } from "react-router-dom";
@@ -61,9 +61,10 @@ const Navigation = () => {
                 Explore
               </Button>
             </Link>
-            <Link to="/explore">
+            <Link to="/podcasts">
               <Button variant="ghost" size="sm" className="hover:text-accent">
-                Topics
+                <Mic2 className="w-4 h-4 mr-1" />
+                Podcasts
               </Button>
             </Link>
             {user ? (
@@ -146,8 +147,9 @@ const Navigation = () => {
                   <Link to="/explore" className="text-lg font-medium hover:text-accent transition-colors">
                     Explore
                   </Link>
-                  <Link to="/explore" className="text-lg font-medium hover:text-accent transition-colors">
-                    Topics
+                  <Link to="/podcasts" className="flex items-center text-lg font-medium hover:text-accent transition-colors">
+                    <Mic2 className="w-4 h-4 mr-2" />
+                    Podcasts
                   </Link>
                   {user ? (
                     <>

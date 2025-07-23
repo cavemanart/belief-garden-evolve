@@ -136,6 +136,71 @@ export type Database = {
           },
         ]
       }
+      episodes: {
+        Row: {
+          audio_url: string | null
+          content: string | null
+          created_at: string
+          description: string | null
+          duration: number | null
+          episode_number: number | null
+          external_audio_url: string | null
+          id: string
+          podcast_id: string
+          publish_date: string | null
+          published: boolean | null
+          season_number: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          episode_number?: number | null
+          external_audio_url?: string | null
+          id?: string
+          podcast_id: string
+          publish_date?: string | null
+          published?: boolean | null
+          season_number?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          episode_number?: number | null
+          external_audio_url?: string | null
+          id?: string
+          podcast_id?: string
+          publish_date?: string | null
+          published?: boolean | null
+          season_number?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_podcast_id_fkey"
+            columns: ["podcast_id"]
+            isOneToOne: false
+            referencedRelation: "podcasts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       essays: {
         Row: {
           content: string
@@ -283,6 +348,48 @@ export type Database = {
           id?: string
           statement?: string
           tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      podcasts: {
+        Row: {
+          category: string | null
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          explicit: boolean | null
+          id: string
+          language: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          explicit?: boolean | null
+          id?: string
+          language?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          explicit?: boolean | null
+          id?: string
+          language?: string | null
+          tags?: string[] | null
+          title?: string
           updated_at?: string
           user_id?: string
         }
